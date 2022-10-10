@@ -7,9 +7,20 @@ namespace CityInfo.API.Controllers
     public class CititiesController : ControllerBase
     {
         [HttpGet]
-        public JsonResult GetCitites()
+        public IActionResult GetCitites()
         {
-            return new JsonResult(CititiesDataStore.Current.Citities);
+            return Ok(CititiesDataStore.Current.Citities);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetCity(int id)
+        {
+            var city = CititiesDataStore.Current.Citities
+                .FirstOrDefault(cidade => cidade.Id == id);
+
+            if (city is null) return NotFound();
+
+            return Ok(city);
         }
     }
 }

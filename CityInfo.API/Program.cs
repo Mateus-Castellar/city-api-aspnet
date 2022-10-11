@@ -1,6 +1,8 @@
 using CityInfo.API;
+using CityInfo.API.Data;
 using CityInfo.API.Services;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 //rollingInterval: RollingInterval.Day => gera um arquivo de log diariamente
@@ -19,6 +21,9 @@ builder.Services.AddControllers(options =>
 {
     options.ReturnHttpNotAcceptable = true;
 }).AddXmlDataContractSerializerFormatters();
+
+builder.Services.AddDbContext<CityInfoContext>(options =>
+    options.UseSqlite("Data Source=CityInfo.db"));
 
 builder.Services.AddScoped<CititiesDataStore>();
 

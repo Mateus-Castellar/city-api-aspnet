@@ -1,3 +1,5 @@
+using CityInfo.API;
+using CityInfo.API.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Serilog;
 
@@ -17,6 +19,10 @@ builder.Services.AddControllers(options =>
 {
     options.ReturnHttpNotAcceptable = true;
 }).AddXmlDataContractSerializerFormatters();
+
+builder.Services.AddScoped<CititiesDataStore>();
+
+builder.Services.AddTransient<ILocalMailService, LocalMailService>();
 
 builder.Services.AddEndpointsApiExplorer();
 

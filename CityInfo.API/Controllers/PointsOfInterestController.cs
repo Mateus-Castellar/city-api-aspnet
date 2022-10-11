@@ -1,4 +1,5 @@
 ﻿using CityInfo.API.Models;
+using CityInfo.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CityInfo.API.Controllers
@@ -8,16 +9,21 @@ namespace CityInfo.API.Controllers
     public class PointsOfInterestController : ControllerBase
     {
         private readonly ILogger<PointsOfInterestController> _logger;
+        private readonly ILocalMailService _mailService;
+        private readonly CititiesDataStore _cityStore;
 
-        public PointsOfInterestController(ILogger<PointsOfInterestController> logger)
+        public PointsOfInterestController(ILogger<PointsOfInterestController> logger,
+            ILocalMailService mailService, CititiesDataStore cityStore)
         {
             _logger = logger;
+            _mailService = mailService;
+            _cityStore = cityStore;
         }
 
         [HttpGet]
         public IActionResult GetPoints(int cityId)
         {
-            var city = CititiesDataStore.Current.Citities
+            var city = _cityStore.Citities
                 .FirstOrDefault(city => city.Id == cityId);
 
             if (city is null)
@@ -34,7 +40,7 @@ namespace CityInfo.API.Controllers
         {
             try
             {
-                var city = CititiesDataStore.Current.Citities
+                var city = _cityStore.Citities
                .FirstOrDefault(city => city.Id == cityId);
 
                 if (city is null) return NotFound();
@@ -58,12 +64,12 @@ namespace CityInfo.API.Controllers
         {
             if (ModelState.IsValid is false) return BadRequest();
 
-            var city = CititiesDataStore.Current.Citities
+            var city = _cityStore.Citities
                 .FirstOrDefault(city => city.Id == cityId);
 
             if (city is null) return NotFound();
 
-            var maxPointInterestId = CititiesDataStore.Current.Citities
+            var maxPointInterestId = _cityStore.Citities
                 .SelectMany(city => city.PointsOfInterests).Max(lbda => lbda.Id);
 
             var finailPointPost = new PointOfInterestDTO
@@ -87,7 +93,7 @@ namespace CityInfo.API.Controllers
         [HttpPut("{pointOfInterestId}")]
         public IActionResult UpdatePointInterest(int cityId, int pointOfInterestId, PointOfInterestForUpdateTO point)
         {
-            var city = CititiesDataStore.Current.Citities
+            var city = _cityStore.Citities
                .FirstOrDefault(city => city.Id == cityId);
 
             if (city is null) return NotFound();
@@ -109,7 +115,7 @@ namespace CityInfo.API.Controllers
         [HttpDelete("{pointOfInterestId}")]
         public IActionResult DeletePointOfInterest(int cityId, int pointOfInterestId)
         {
-            var city = CititiesDataStore.Current.Citities
+            var city = _cityStore.Citities
                .FirstOrDefault(city => city.Id == cityId);
 
             if (city is null) return NotFound();
@@ -120,6 +126,8 @@ namespace CityInfo.API.Controllers
             if (pointInterest is null) return NotFound();
 
             city.PointsOfInterests.Remove(pointInterest);
+
+            _mailService.Send("Point deleted", $"point delete in cityId [{cityId}]");
 
             return NoContent();
         }

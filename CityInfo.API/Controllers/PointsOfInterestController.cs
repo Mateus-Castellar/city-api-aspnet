@@ -32,17 +32,25 @@ namespace CityInfo.API.Controllers
         [HttpGet("{pointId}", Name = "GetPointOfInterest")]
         public IActionResult GetPointInterest(int cityId, int pointId)
         {
-            var city = CititiesDataStore.Current.Citities
+            try
+            {
+                var city = CititiesDataStore.Current.Citities
                .FirstOrDefault(city => city.Id == cityId);
 
-            if (city is null) return NotFound();
+                if (city is null) return NotFound();
 
-            var point = city.PointsOfInterests
-                .FirstOrDefault(point => point.Id == pointId);
+                var point = city.PointsOfInterests
+                    .FirstOrDefault(point => point.Id == pointId);
 
-            if (point is null) return NotFound();
+                if (point is null) return NotFound();
 
-            return Ok(point);
+                return Ok(point);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical($"exception while getting points of interest for city with id {cityId}", ex);
+                return StatusCode(500, "A problem happend while handling you request");
+            }
         }
 
         [HttpPost]

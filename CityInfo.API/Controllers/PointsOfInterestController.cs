@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CityInfo.API.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CityInfo.API.Controllers
 {
@@ -17,7 +18,7 @@ namespace CityInfo.API.Controllers
             return Ok(city.PointsOfInterests);
         }
 
-        [HttpGet("{pointId}")]
+        [HttpGet("{pointId}", Name = "GetPointOfInterest")]
         public IActionResult GetPointInterest(int cityId, int pointId)
         {
             var city = CititiesDataStore.Current.Citities
@@ -31,6 +32,35 @@ namespace CityInfo.API.Controllers
             if (point is null) return NotFound();
 
             return Ok(point);
+        }
+
+        [HttpPost]
+        public IActionResult CreatePointInterest(int cityId, PointOfInterestForCreateDTO point)
+        {
+            var city = CititiesDataStore.Current.Citities
+                .FirstOrDefault(city => city.Id == cityId);
+
+            if (city is null) return NotFound();
+
+            var maxPointInterestId = CititiesDataStore.Current.Citities
+                .SelectMany(city => city.PointsOfInterests).Max(lbda => lbda.Id);
+
+            var finailPointPost = new PointOfInterestDTO
+            {
+                Id = ++maxPointInterestId,
+                Name = point.Name,
+                Description = point.Description,
+            };
+
+            city.PointsOfInterests.Add(finailPointPost);
+
+            //retorna no head a url para realizar o get do ponto recem criado..
+            return CreatedAtRoute("GetPointOfInterest",
+                new
+                {
+                    cityId = cityId,
+                    pointId = finailPointPost.Id,
+                }, finailPointPost);
         }
     }
 }

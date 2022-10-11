@@ -7,13 +7,24 @@ namespace CityInfo.API.Controllers
     [Route("api/citities/{cityId}/points")]
     public class PointsOfInterestController : ControllerBase
     {
+        private readonly ILogger<PointsOfInterestController> _logger;
+
+        public PointsOfInterestController(ILogger<PointsOfInterestController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpGet]
         public IActionResult GetPoints(int cityId)
         {
             var city = CititiesDataStore.Current.Citities
                 .FirstOrDefault(city => city.Id == cityId);
 
-            if (city is null) return NotFound();
+            if (city is null)
+            {
+                _logger.LogWarning($"the {cityId} does not match any city");
+                return NotFound();
+            }
 
             return Ok(city.PointsOfInterests);
         }

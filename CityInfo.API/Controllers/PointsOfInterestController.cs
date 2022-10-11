@@ -37,6 +37,8 @@ namespace CityInfo.API.Controllers
         [HttpPost]
         public IActionResult CreatePointInterest(int cityId, PointOfInterestForCreateDTO point)
         {
+            if (ModelState.IsValid is false) return BadRequest();
+
             var city = CititiesDataStore.Current.Citities
                 .FirstOrDefault(city => city.Id == cityId);
 
@@ -61,6 +63,28 @@ namespace CityInfo.API.Controllers
                     cityId = cityId,
                     pointId = finailPointPost.Id,
                 }, finailPointPost);
+        }
+
+        [HttpPut("{pointOfInterestId}")]
+        public IActionResult UpdatePointInterest(int cityId, int pointOfInterestId, PointOfInterestForUpdateTO point)
+        {
+            var city = CititiesDataStore.Current.Citities
+               .FirstOrDefault(city => city.Id == cityId);
+
+            if (city is null) return NotFound();
+
+            var pointInterest = city.PointsOfInterests
+                .FirstOrDefault(point => point.Id == pointOfInterestId);
+
+            if (pointInterest is null) return NotFound();
+
+            //Segundo padrao http o put "deve atualizar o objeto por inteiro" e caso o usuario
+            //não informe um valor para um campo ele deve receber seu defaultValue
+
+            pointInterest.Name = point.Name;
+            pointInterest.Description = point.Description;
+
+            return NoContent();
         }
     }
 }

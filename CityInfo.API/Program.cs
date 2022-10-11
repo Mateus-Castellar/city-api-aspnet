@@ -1,6 +1,17 @@
 using Microsoft.AspNetCore.StaticFiles;
+using Serilog;
+
+//rollingInterval: RollingInterval.Day => gera um arquivo de log diariamente
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.Console()
+    .WriteTo.File("logs/cityInfo.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+//builder.Logging.ClearProviders();
+//builder.Logging.AddConsole();
+builder.Host.UseSerilog();
 
 builder.Services.AddControllers(options =>
 {

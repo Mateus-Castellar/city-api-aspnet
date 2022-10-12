@@ -26,16 +26,13 @@ namespace CityInfo.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetCity(int id)
+        public async Task<ActionResult<CityDTO>> GetCity(int id)
         {
-            //var city = _cityStore.Citities
-            //    .FirstOrDefault(cidade => cidade.Id == id);
+            var city = await _repository.GetCityAsync(id);
 
-            //if (city is null) return NotFound();
+            if (city is null) return NotFound();
 
-            //return Ok(city);
-
-            return Ok();
+            return Ok(_mapper.Map<CityWithoutPointsOfInterestDTO>(city));
         }
     }
 }

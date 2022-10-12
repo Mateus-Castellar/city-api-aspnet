@@ -31,10 +31,33 @@ namespace CityInfo.API.Services
                 .FirstOrDefaultAsync(lbda => lbda.CityId == cityId && lbda.Id == pointId);
         }
 
+        public async Task<bool> CityExistsAsync(int cityId)
+        {
+            return await _context.Citys.AnyAsync(lbda => lbda.Id == cityId);
+        }
+
         public async Task<IEnumerable<PointOfInterest>> GetPointsOfInterestForCityAsync(int cityId)
         {
             return await _context.PointsOfInterest
                 .Where(lbda => lbda.CityId == cityId).ToListAsync();
+        }
+
+        public async Task AddPointIntesertForCityAsync(int cityId, PointOfInterest point)
+        {
+            var city = await GetCityAsync(cityId);
+
+            if (city is not null)
+                city.PointsOfInterest.Add(point);
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public void DeletePointIntesert(PointOfInterest point)
+        {
+            _context.PointsOfInterest.Remove(point);
         }
     }
 }

@@ -20,11 +20,9 @@ namespace CityInfo.API.Services
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<City>> GetCitiesAsync(string? name, string? searchQuery)
+        public async Task<(IEnumerable<City>, PaginationMetadata)> GetCitiesAsync(string? name, string? searchQuery,
+            int pageNumber, int pageSize)
         {
-            if (string.IsNullOrEmpty(name) && string.IsNullOrWhiteSpace(searchQuery))
-                return await GetCitiesAsync();
-
             var collection = _context.Citys as IQueryable<City>;
 
             if (string.IsNullOrWhiteSpace(name) is false)
@@ -40,7 +38,19 @@ namespace CityInfo.API.Services
                 (lbda.Description != null && lbda.Description.Contains(searchQuery)));
             }
 
-            return await collection.OrderBy(lbda => lbda.Name).ToListAsync();
+            var totalitemCount = await collection.CountAsync();
+
+            var paginationMetadata = new
+                PaginationMetadata(totalitemCount, pageSize, pageNumber);
+
+            //a consulta so é enviada a base dados ao chamar "ToListAsync()"
+            var collectionReturn = await collection
+                .OrderBy(lbda => lbda.Name)
+                .Skip(pageSize * (pageNumber - 1))
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (collectionReturn, paginationMetadata);
         }
 
         public async Task<City?> GetCityAsync(int cityId)

@@ -17,10 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Logging.AddConsole();
 builder.Host.UseSerilog();
 
-builder.Services.AddControllers(options =>
-{
-    options.ReturnHttpNotAcceptable = true;
-}).AddXmlDataContractSerializerFormatters();
+builder.Services.AddControllers();
 
 builder.Services.AddDbContext<CityInfoContext>(options =>
     options.UseSqlite("Data Source=CityInfo.db"));
@@ -28,6 +25,7 @@ builder.Services.AddDbContext<CityInfoContext>(options =>
 builder.Services.AddScoped<CititiesDataStore>();
 
 builder.Services.AddTransient<ILocalMailService, LocalMailService>();
+builder.Services.AddScoped<IRepository, Repository>();
 
 builder.Services.AddEndpointsApiExplorer();
 

@@ -17,6 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Logging.AddConsole();
 builder.Host.UseSerilog();
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<CityInfoContext>(options =>

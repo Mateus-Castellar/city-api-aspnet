@@ -24,7 +24,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<CityInfoContext>(options =>
     options.UseSqlite("Data Source=CityInfo.db"));
 
-builder.Services.AddScoped<CititiesDataStore>();
+builder.Services.AddScoped<CitiesDataStore>();
 
 builder.Services.AddTransient<ILocalMailService, LocalMailService>();
 builder.Services.AddScoped<IRepository, Repository>();

@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace CityInfo.API.Controllers
 {
     [ApiController]
-    [Route("api/citities")]
-    public class CititiesController : ControllerBase
+    [Route("api/cities")]
+    public class CitiesController : ControllerBase
     {
         private readonly IRepository _repository;
         private readonly IMapper _mapper;
 
-        public CititiesController(IRepository repository, IMapper mapper)
+        public CitiesController(IRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;

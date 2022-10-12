@@ -2,14 +2,14 @@
 
 namespace CityInfo.API
 {
-    public class CititiesDataStore
+    public class CitiesDataStore
     {
-        public List<CityDTO> Citities { get; set; }
-        //public static CititiesDataStore Current { get; set; } = new CititiesDataStore();
+        public List<CityDTO> Cities { get; set; }
+        //public static CitiesDataStore Current { get; set; } = new CitiesDataStore();
 
-        public CititiesDataStore()
+        public CitiesDataStore()
         {
-            Citities = new List<CityDTO>()
+            Cities = new List<CityDTO>()
             {
                 new CityDTO()
                 {

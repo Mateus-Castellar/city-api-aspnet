@@ -20,6 +20,20 @@ namespace CityInfo.API.Services
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<City>> GetCitiesAsync(string? name)
+        {
+
+            if (string.IsNullOrEmpty(name))
+                return await GetCitiesAsync();
+
+            name = name.Trim();
+
+            return await _context.Citys
+                .Where(lbda => lbda.Name == name)
+                .OrderBy(lbda => lbda.Name)
+                .ToListAsync();
+        }
+
         public async Task<City?> GetCityAsync(int cityId)
         {
             return await _context.Citys.FirstOrDefaultAsync(lbda => lbda.Id == cityId);

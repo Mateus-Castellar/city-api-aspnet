@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CityInfo.API</name>
+    </assembly>
+    <members>
+        <member name="M:CityInfo.API.Controllers.CitiesController.GetCity(System.Int32)">
+            <summary>
+            Get City by Id
+            </summary>
+            <param name="id">The id of the cty to Get</param>
+            <returns>An IActionResult</returns>
+            <response code="200">Return city request</response>
+        </member>
+    </members>
+</doc>

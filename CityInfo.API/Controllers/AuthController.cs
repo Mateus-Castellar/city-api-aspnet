@@ -39,7 +39,7 @@ namespace CityInfo.API.Controllers
 
             var jwtSecurityToken = new JwtSecurityToken(
                 _configuration["Auth:Issuer"],
-                _configuration["Auth:Audiance"],
+                _configuration["Auth:Audience"],
                 claimsForToken,
                 DateTime.UtcNow,
                 DateTime.UtcNow.AddHours(1),

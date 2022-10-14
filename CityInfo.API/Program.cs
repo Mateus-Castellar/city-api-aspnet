@@ -1,10 +1,13 @@
 using CityInfo.API;
 using CityInfo.API.Data;
 using CityInfo.API.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Reflection;
 using System.Text;
 
 //rollingInterval: RollingInterval.Day => gera um arquivo de log diariamente
@@ -36,7 +39,17 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.ReturnHttpNotAcceptable = false;
+});
+
+builder.Services.AddApiVersioning(setup =>
+{
+    setup.AssumeDefaultVersionWhenUnspecified = true;
+    setup.DefaultApiVersion = new ApiVersion(1, 0);
+    setup.ReportApiVersions = true;
+});
 
 builder.Services.AddDbContext<CityInfoContext>(options =>
     options.UseSqlite("Data Source=CityInfo.db"));
@@ -48,7 +61,34 @@ builder.Services.AddScoped<IRepository, Repository>();
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(setup =>
+{
+    var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
+
+    setup.IncludeXmlComments(xmlCommentsFullPath);
+
+    setup.AddSecurityDefinition("CityInfoApiBearerAuth", new OpenApiSecurityScheme()
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        Description = "input valid token to access endpoints API"
+    });
+
+    setup.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id="CityInfoApiBearerAuth"
+                }
+            }, new List<string>()
+        }
+    });
+});
 
 builder.Services.AddSingleton<FileExtensionContentTypeProvider>();
 

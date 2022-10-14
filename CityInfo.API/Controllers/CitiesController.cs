@@ -9,7 +9,8 @@ namespace CityInfo.API.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/cities")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/cities")]
     public class CitiesController : ControllerBase
     {
         private readonly IRepository _repository;
@@ -38,7 +39,16 @@ namespace CityInfo.API.Controllers
             return Ok(_mapper.Map<IEnumerable<CityWithoutPointsOfInterestDTO>>(cityEntities));
         }
 
+        /// <summary>
+        /// Get City by Id
+        /// </summary>
+        /// <param name="id">The id of the cty to Get</param>
+        /// <returns>An IActionResult</returns>
+        /// <response code="200">Return city request</response>
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CityDTO>> GetCity(int id)
         {
             var city = await _repository.GetCityAsync(id);
